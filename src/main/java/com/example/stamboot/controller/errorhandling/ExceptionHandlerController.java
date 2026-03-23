@@ -21,7 +21,7 @@ public class ExceptionHandlerController {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     public String genericExceptionHandler(Exception e, WebRequest request) {
-        logger.error(GENERAL_ERROR_MESSAGE_PREFIX + TextUtils.getStacktrace(e));
+        logger.error(GENERAL_ERROR_MESSAGE_PREFIX, e);
         return TextUtils.formatStringToPreserveIndentationForHtml(GENERAL_ERROR_MESSAGE_PREFIX + e.getMessage());
     }
 }

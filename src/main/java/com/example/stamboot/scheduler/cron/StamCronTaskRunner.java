@@ -1,13 +1,12 @@
 package com.example.stamboot.scheduler.cron;
 
+import java.time.LocalTime;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-
-import java.time.LocalTime;
 
 @EnableAsync
 //@Component

@@ -1,19 +1,17 @@
 package com.example.stamboot.bl;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mgnt.utils.JsonUtils;
 import com.mgnt.utils.StringUnicodeEncoderDecoder;
 import com.mgnt.utils.TextUtils;
-import de.undercouch.bson4jackson.BsonFactory;
-import de.undercouch.bson4jackson.BsonGenerator;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 public class BsonSerializer {

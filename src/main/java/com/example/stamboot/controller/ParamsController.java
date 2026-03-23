@@ -1,18 +1,22 @@
 package com.example.stamboot.controller;
 
-import com.example.stamboot.bl.tasks.ParamLoggingTask;
-import com.example.stamboot.controller.errorhandling.ExceptionHandlerController;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MimeType;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
-import java.util.concurrent.ConcurrentSkipListSet;
+import com.example.stamboot.bl.tasks.ParamLoggingTask;
+import com.example.stamboot.controller.errorhandling.ExceptionHandlerController;
 
 @RestController
 @RequestMapping("/params")

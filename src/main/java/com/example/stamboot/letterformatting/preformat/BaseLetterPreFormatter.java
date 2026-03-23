@@ -1,8 +1,8 @@
 package com.example.stamboot.letterformatting.preformat;
 
-import com.example.stamboot.letterformatting.preformat.LetterPreFormatter;
-import com.mgnt.lifecycle.management.BaseEntity;
 import org.apache.commons.lang3.StringUtils;
+
+import com.mgnt.lifecycle.management.BaseEntity;
 
 /*
  * This is an abstract class that contains some mandatory code that ties every concrete implementation to its factory

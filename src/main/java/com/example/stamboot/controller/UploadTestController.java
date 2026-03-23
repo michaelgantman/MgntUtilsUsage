@@ -50,7 +50,7 @@ public class UploadTestController {
                 Files.write(Paths.get("C:\\Michael\\tmp\\testPic.jpg"), buff);
             }
         } catch (Exception e) {
-            System.out.println(TextUtils.getStacktrace(e));
+            logger.info(e);
         }
         return ResponseEntity.ok("Success");
     }
@@ -79,7 +79,7 @@ public class UploadTestController {
                 response.getOutputStream().write(buff);
             }
         } catch (Exception e) {
-            System.out.println(TextUtils.getStacktrace(e));
+        	logger.info(e);
         }
     }
 
@@ -121,7 +121,7 @@ public class UploadTestController {
             result.put("result", "Failure");
             result.put("message", TextUtils.getStacktrace(e, "com.example.stamboot."));
             responseEntity = ResponseEntity.ok(result);
-            System.out.println(TextUtils.getStacktrace(e));
+            logger.info(e);
         }
         return responseEntity;
     }
@@ -142,7 +142,7 @@ public class UploadTestController {
             }
             logger.info("Received body content: " + sb.toString());
         } catch (Exception e) {
-            System.out.println(TextUtils.getStacktrace(e));
+            logger.info(e);
         }
         return ResponseEntity.ok("Success");
     }
