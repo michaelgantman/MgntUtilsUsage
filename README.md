@@ -2,7 +2,7 @@
 This repository contains several demos that demonstrate various features of 
 <a href="https://github.com/michaelgantman/Mgnt">Open Source MgntUtils library</a>.</p> At the moment this repo is work in progress. 
 In particular, it is not well documented yet. However, if you are willing to dive into the code you will find some nice demos for several features.</p>
-I am working the documentation though. And I recently completed writing a very in-depth article about how to use <b>Self-populating factory</b> feature to build extensible Multi-Stage Workflows for multiple data types. The article covers:
+I am working on the documentation though. And I recently completed writing a very in-depth article about how to use <b>Self-populating factory</b> feature to build extensible Multi-Stage Workflows for multiple data types. The article covers:
 
 <ul>
   <li>How to design workflows that support new data types without modifying existing code</li>
