@@ -25,8 +25,8 @@ public class MgntStackTraceConverter extends ThrowableProxyConverter {
 		// Extract the raw java.lang.Throwable from Logback's proxy object
 		if (proxy instanceof ThrowableProxy) {
 			Throwable rawException = ((ThrowableProxy) proxy).getThrowable();
-
-			return TextUtils.getStacktrace(rawException, cutTheBS) + "\n";
+			//remove first new line and add new line at the end
+			return TextUtils.getStacktrace(rawException, cutTheBS).substring(1) + "\n";
 		}
 
 		// Fallback: If the exception is serialized over a network,
