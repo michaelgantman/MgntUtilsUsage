@@ -17,8 +17,25 @@ public class LogFilteringDemoController {
 
     private static final Log logger = LogFactory.getLog(LogFilteringDemoController.class);
 
-	@GetMapping
-    public ResponseEntity<String> logEndPoint(@RequestParam Boolean cutTheBS) {
+	@GetMapping("/display")
+    public ResponseEntity<String> logDisplayEndPoint(@RequestParam Boolean cutTheBS) {
+        String message;
+        try {
+            long currentTime = System.currentTimeMillis();
+            if(currentTime % 2 == 0) {
+                throw new Exception("Demo Exception");
+            } else {
+                message = LocalDateTime.now() + " : No Exception";
+            }
+        } catch (Exception e) {
+            message = TextUtils.formatStringToPreserveIndentationForHtml(LocalDateTime.now() + ": " +
+                    TextUtils.getStacktrace(e, cutTheBS, "com.example.").substring(1));
+        }
+        return ResponseEntity.ok(message);
+    }
+
+    @GetMapping
+    public ResponseEntity<String> logEndPoint() {
         String message;
         try {
             long currentTime = System.currentTimeMillis();
@@ -29,12 +46,10 @@ public class LogFilteringDemoController {
                 logger.info(message);
             }
         } catch (Exception e) {
-        	String currentTime = LocalDateTime.now().toString();
-            message = TextUtils.getStacktrace(e, cutTheBS, "com.example.").substring(1);
-            logger.info(currentTime + " : Raw Exception:", e);
-            logger.info(currentTime + " : Exception converted to String:\n" + message);
-            message = TextUtils.formatStringToPreserveIndentationForHtml(message);
+            logger.info("Raw Exception:", e);
+            message = LocalDateTime.now() + ": Exception occurred, check the logs";
         }
         return ResponseEntity.ok(message);
     }
-}
+
+    }
