@@ -21,12 +21,7 @@ public class LogFilteringDemoController {
     public ResponseEntity<String> logDisplayEndPoint(@RequestParam Boolean cutTheBS) {
         String message;
         try {
-            long currentTime = System.currentTimeMillis();
-            if(currentTime % 2 == 0) {
-                throw new Exception("Demo Exception");
-            } else {
-                message = LocalDateTime.now() + " : No Exception";
-            }
+            message = callHandler();
         } catch (Exception e) {
             message = TextUtils.formatStringToPreserveIndentationForHtml(LocalDateTime.now() + ": " +
                     TextUtils.getStacktrace(e, cutTheBS, "com.example.").substring(1));
@@ -38,13 +33,8 @@ public class LogFilteringDemoController {
     public ResponseEntity<String> logEndPoint() {
         String message;
         try {
-            long currentTime = System.currentTimeMillis();
-            if(currentTime % 2 == 0) {
-                throw new Exception("Demo Exception");
-            } else {
-                message = LocalDateTime.now() + " : No Exception";
-                logger.info(message);
-            }
+            message = callHandler();
+            logger.info(message);
         } catch (Exception e) {
             logger.info("Raw Exception:", e);
             message = LocalDateTime.now() + ": Exception occurred, check the logs";
@@ -52,4 +42,14 @@ public class LogFilteringDemoController {
         return ResponseEntity.ok(message);
     }
 
+    private String callHandler() throws Exception {
+        String message;
+        long currentTime = System.currentTimeMillis();
+        if (currentTime % 2 == 0) {
+            throw new Exception("Demo Exception");
+        } else {
+            message = LocalDateTime.now() + " : No Exception";
+        }
+        return message;
     }
+}
