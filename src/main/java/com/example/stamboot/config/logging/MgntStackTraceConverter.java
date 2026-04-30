@@ -6,6 +6,7 @@ import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.spi.ThrowableProxy;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Global Logback interceptor to filter all stack traces using MgntUtils.
@@ -13,7 +14,7 @@ import ch.qos.logback.classic.spi.ThrowableProxy;
 
 public class MgntStackTraceConverter extends ThrowableProxyConverter {
 	
-	private static boolean cutTheBS = true;
+	private static volatile boolean cutTheBS = true;
 
 	@Override
 	public String convert(ILoggingEvent event) {
@@ -22,16 +23,40 @@ public class MgntStackTraceConverter extends ThrowableProxyConverter {
 			return "";
 		}
 
-		// Extract the raw java.lang.Throwable from Logback's proxy object
 		if (proxy instanceof ThrowableProxy) {
-			Throwable rawException = ((ThrowableProxy) proxy).getThrowable();
-			//remove first new line and add new line at the end
-			return TextUtils.getStacktrace(rawException, cutTheBS).substring(1) + "\n";
+			Throwable rawException = ((ThrowableProxy)proxy).getThrowable();
+			if (rawException != null) {
+				String filtered = safeGetStacktrace(rawException);
+				if (StringUtils.isNotEmpty(filtered)) {
+					// TextUtils.getStacktrace currently prepends a newline; strip it only if present
+					// so a future library change cannot leak a leading blank line into the output.
+					String body = filtered.startsWith("\n") ? filtered.substring(1) : filtered;
+					return body + "\n";
+				}
+			}
 		}
 
-		// Fallback: If the exception is serialized over a network,
-		// fallback to standard Logback formatting.
+		// Fallback for serialized remote exceptions, a null raw Throwable, unexpected
+		// library output, or a library failure — defer to standard Logback rendering so
+		// nothing is ever lost.
 		return super.convert(event);
+	}
+
+	/**
+	 * Calls the MgntUtils filter under a Throwable-catching guard. An uncaught
+	 * exception inside a Logback converter is suppressed at the appender level and
+	 * the entire log event is dropped — so any failure (RuntimeException,
+	 * StackOverflowError on a cyclic cause chain, LinkageError, etc.) MUST be
+	 * contained here. Returning {@code null} causes the caller to fall through to
+	 * {@code super.convert(event)}, which renders the standard Logback stacktrace
+	 * (unfiltered, but never silently dropped).
+	 */
+	private String safeGetStacktrace(Throwable rawException) {
+		try {
+			return TextUtils.getStacktrace(rawException, cutTheBS);
+		} catch (Throwable libraryFailure) {
+			return null;
+		}
 	}
 
 	public static synchronized boolean isCutTheBS() {
