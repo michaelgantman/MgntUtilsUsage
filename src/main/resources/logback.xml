@@ -1,16 +1,110 @@
+<!--
+    Logback configuration demonstrating MgntStackTraceConverter wired into BOTH:
+      - pattern-based rendering (%ex / %wEx / etc.) used by the CONSOLE appender
+      - JSON-structured rendering (LogstashEncoder) used by the JSON appender
+
+    Both appenders write to stdout so the reader can see the SAME exception
+    rendered two different ways, both filtered by the same converter. In a real
+    project the JSON appender would point at a network/file destination feeding
+    a structured-logging aggregator (ELK / Datadog / Splunk).
+
+    See the article "Zero-Code-Change Stacktrace Filtering for Spring Boot:
+    An Infrastructure-Level Integration" for the full walkthrough.
+-->
 <configuration>
 
-    <conversionRule conversionWord="ex" 
-                    converterClass="com.example.stamboot.config.logging.MgntStackTraceConverter" />
+    <!--
+        Register MgntStackTraceConverter for every throwable conversion word that
+        Logback (and Spring Boot) know about, not just %ex:
 
+          Logback core defaults    : %ex / %exception / %throwable
+                                     %xEx / %xException / %xThrowable (extended,
+                                     with package/jar info per frame)
+          Spring Boot defaults.xml : %wex / %wEx (whitespace-wrapped variants
+                                     used by Spring Boot's default
+                                     CONSOLE_LOG_PATTERN — declared in
+                                     spring-boot's base.xml / defaults.xml)
+
+        Without this defensive registration, any pattern using a conversion word
+        we did NOT register goes around our filter and silently emits the
+        unfiltered "Scroll of Death" — particularly easy to hit in Spring Boot
+        apps where the default pattern uses %wEx, not %ex.
+
+        Caveat: redirecting %wEx to our converter loses the leading/trailing
+        blank-line wrapping that Spring's WhitespaceThrowableProxyConverter
+        adds. In practice the filtered output is short enough that the
+        wrapping isn't missed.
+    -->
+    <conversionRule conversionWord="ex"
+                    converterClass="com.example.stamboot.config.logging.MgntStackTraceConverter"/>
+    <conversionRule conversionWord="exception"
+                    converterClass="com.example.stamboot.config.logging.MgntStackTraceConverter"/>
+    <conversionRule conversionWord="throwable"
+                    converterClass="com.example.stamboot.config.logging.MgntStackTraceConverter"/>
+    <conversionRule conversionWord="xEx"
+                    converterClass="com.example.stamboot.config.logging.MgntStackTraceConverter"/>
+    <conversionRule conversionWord="xException"
+                    converterClass="com.example.stamboot.config.logging.MgntStackTraceConverter"/>
+    <conversionRule conversionWord="xThrowable"
+                    converterClass="com.example.stamboot.config.logging.MgntStackTraceConverter"/>
+    <conversionRule conversionWord="wex"
+                    converterClass="com.example.stamboot.config.logging.MgntStackTraceConverter"/>
+    <conversionRule conversionWord="wEx"
+                    converterClass="com.example.stamboot.config.logging.MgntStackTraceConverter"/>
+
+    <!--
+        Pattern-based console appender. The %ex token at the end of the pattern
+        is what triggers our converter (via the <conversionRule> above) when an
+        exception is logged.
+    -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n%ex</pattern>
         </encoder>
     </appender>
 
+    <!--
+        JSON appender demonstrating the SECOND wiring needed to fully cover a
+        production system that ships logs to a structured-logging aggregator
+        (ELK / Datadog / Splunk / OpenSearch / etc.).
+
+        LogstashEncoder does NOT use Logback's %ex conversion word. It goes
+        around every <conversionRule> registered above and uses its own
+        throwable rendering pipeline. To filter the "stack_trace" field in the
+        JSON output, the encoder must explicitly point at a class implementing
+        ThrowableHandlingConverter via the <throwableConverter> element below.
+
+        MgntStackTraceConverter qualifies because its parent class
+        ThrowableProxyConverter is itself a ThrowableHandlingConverter — so
+        the SAME converter class serves both wirings without any code change.
+
+        Without this <throwableConverter> wiring, filtering would work
+        perfectly in the local dev console (which uses the pattern-based
+        appender above) and silently do nothing in production JSON output —
+        a common silent failure mode that's invisible until someone looks at
+        the aggregator.
+
+        The same <throwableConverter> slot is supported by
+        LoggingEventCompositeJsonEncoder (the more granular sibling encoder)
+        if you prefer that.
+    -->
+    <appender name="JSON" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <throwableConverter class="com.example.stamboot.config.logging.MgntStackTraceConverter"/>
+        </encoder>
+    </appender>
+
+    <!--
+        Both appenders are referenced so the demo emits each log event TWICE —
+        once as a pattern-rendered console line and once as a JSON document.
+        Comment out one of the <appender-ref/> lines below if you want to see
+        only one of the two renderings while experimenting.
+    -->
     <root level="INFO">
-        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="CONSOLE"/>
+        <!--
+        <appender-ref ref="JSON"/>
+        -->
     </root>
 
 </configuration>
