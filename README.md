@@ -43,5 +43,5 @@ A very in-depth article about how to use the <b>Self-populating factory</b> feat
 </ul>
 
 The article at first explain in detail what is <b>Self-populating factory pattern</b>, including a walk-through a runnable example in the MgntUtils repo. After that it goes into detail how to build the workflow based on that pattern with a walk-through the runnable real world like example in this repo. <br> Here is the link to the article: 
-<a href="https://www.linkedin.com/pulse/infrastructure-extensible-multi-stage-workflows-across-gantman-0vu2f?utm_source=share&utm_medium=member_android&utm_campaign=share_via">Infrastructure for Extensible Multi-Stage Workflows Across Multiple Data Types</a> Read it, and clone this repo and you will get good idea on how to build extensible, well designed (I hope) workflow, and run the example from this repo. 
+<a href="https://dev.to/mgantman/infrastructure-for-extensible-multi-stage-workflows-across-multiple-data-types-79k">Infrastructure for Extensible Multi-Stage Workflows Across Multiple Data Types</a> Read it, and clone this repo and you will get good idea on how to build extensible, well designed (I hope) workflow, and run the example from this repo. 
    
