@@ -30,6 +30,7 @@ The relevant files in this repo are:
   <li><a href="src/main/java/com/example/stamboot/config/logging/LoggerConfigController.java"><code>LoggerConfigController.java</code></a> — the REST controller that exposes the hot runtime on/off toggle (<code>/config/log/stacktrace</code> and <code>/config/log/stacktrace/filter/status</code>).</li>
   <li><a href="src/main/java/com/example/stamboot/StamBootApplication.java"><code>StamBootApplication.java</code></a> — calls <code>TextUtils.setRelevantPackage("com.example.stamboot.")</code> in <code>main()</code> <i>before</i> <code>SpringApplication.run(...)</code>, so the filter is armed before any Spring lifecycle code (and therefore any startup-time crash) can run.</li>
   <li><a href="src/main/java/com/example/stamboot/controller/LogFilteringDemoController.java"><code>LogFilteringDemoController.java</code></a> — the demo endpoint at <a href="http://localhost:8080/log"><code>/log</code></a> that throws an exception with 50% probability so you can compare filtered vs unfiltered output by toggling the runtime flag and refreshing.</li>
+  <li>Unit tests covering the stacktrace-filtering integration (converter behaviour, Logback wiring smoke test, and a disabled manual benchmark) live in package <a href="src/test/java/com/example/stamboot/config/logging"><code>com.example.stamboot.config.logging</code></a>.</li>
 </ul>
 
 <h2>Extensible Multi-Stage Workflows for Multiple Data Types</h2>
